@@ -1,6 +1,7 @@
 package com.example.views;
 
 import com.example.views.rol.RolView;
+import com.example.views.usuario.UsuarioView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -11,7 +12,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-//import com.vaadin.ui.declarative.Design;
 
 public class MainView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -1065352167160385868L;
@@ -29,8 +29,10 @@ public class MainView extends VerticalLayout implements View {
     	addComponent(hlHeader);
     	
     	HorizontalLayout menuAndContent = new HorizontalLayout();
+    	menuAndContent.setSizeFull();
     	Panel panelMenu = new Panel();
     	Tree menuTree = new Tree("Contenido");
+    	menuTree.setSizeFull();
     	panelMenu.setContent(menuTree);
     	
     	// TODO: AGREGAR ACCIONES DE ACUERDO A LOS ROLES DEL USUARIO
@@ -42,12 +44,12 @@ public class MainView extends VerticalLayout implements View {
     	menuAndContent.addComponent(panelMenu);
     	
     	Panel panelContent = new Panel();
-    	panelContent.setContent(new PersonaView());
+    	panelContent.setContent(new UsuarioView());
     	menuAndContent.addComponent(panelContent);
     	
     	addComponent(menuAndContent);
-    	menuAndContent.setExpandRatio(panelMenu, 2);
-    	menuAndContent.setExpandRatio(panelContent, 8);
+    	menuAndContent.setExpandRatio(panelMenu, 1);
+    	menuAndContent.setExpandRatio(panelContent, 9);
     	
     	HorizontalLayout hlFooter = new HorizontalLayout();
     	addComponent(hlFooter);
@@ -61,7 +63,7 @@ public class MainView extends VerticalLayout implements View {
     	menuTree.addValueChangeListener(event -> {
     	    if (event.getProperty() != null && event.getProperty().getValue() != null) {
     	            if(event.getProperty().getValue() == "Usuarios"){
-    	            	panelContent.setContent(new PersonaView());
+    	            	panelContent.setContent(new UsuarioView());
     	            }
     	            if(event.getProperty().getValue() == "Roles"){
     	            	panelContent.setContent(new RolView());

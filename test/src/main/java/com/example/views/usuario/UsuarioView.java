@@ -1,12 +1,9 @@
-package com.example.views;
-
-import java.util.List;
+package com.example.views.usuario;
 
 import com.example.dao.implementations.EntityManagerFactory;
 import com.example.dao.implementations.hibernate.PersonaDAOHib;
 import com.example.dao.interfaces.EntityManager;
 import com.example.modelo.Usuario;
-import com.vaadin.annotations.DesignRoot;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -22,9 +19,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.declarative.Design;
 
-public class PersonaView extends VerticalLayout implements View {
+public class UsuarioView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 358082736884749316L;
 	public static String NAME = "persona";
 	private VerticalLayout mainContent;
@@ -40,7 +36,7 @@ public class PersonaView extends VerticalLayout implements View {
 	
 	private Grid grid;
 	
-	private PersonaAltaModificarSub pams;
+	private UsuarioAltaModificarSub pams;
 
 	private HorizontalLayout hlAccionesGrid;
 	private Button btnNuevo;
@@ -50,7 +46,7 @@ public class PersonaView extends VerticalLayout implements View {
 
 	private EntityManager em = EntityManagerFactory.getInstance(EntityManagerFactory.MYSQL);
 	
-	public PersonaView(){
+	public UsuarioView(){
 		
 		mainContent = new VerticalLayout();
 		mainContent.setSizeFull();
@@ -58,7 +54,6 @@ public class PersonaView extends VerticalLayout implements View {
 		grid = new Grid();
 		
 		panelFiltros = new Panel("Filtros");
-		HorizontalLayout filtrosContainer = new HorizontalLayout();
 		
 		// Create the content
 		FormLayout content = new FormLayout();
@@ -121,7 +116,7 @@ public class PersonaView extends VerticalLayout implements View {
     	mainContent.addComponent(hlAccionesGrid);
     	
     	btnNuevo.addClickListener(e -> {
-    		pams = new PersonaAltaModificarSub("Alta de persona");
+    		pams = new UsuarioAltaModificarSub("Alta de usuario", new Usuario());
     		pams.setWidth("400px");
     		pams.setHeight("400px");
     		UI.getCurrent().addWindow(pams);
@@ -131,13 +126,15 @@ public class PersonaView extends VerticalLayout implements View {
     	});
     	
     	btnModificar.addClickListener(e -> {
-    		pams = new PersonaAltaModificarSub("Modificar persona");
+//    		pams = new UsuarioAltaModificarSub("Modificar persona");
+    		Usuario usuarioSeleccionado = (Usuario) ((SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
+    		pams = new UsuarioAltaModificarSub("Modificar usuario", usuarioSeleccionado);
     		pams.setWidth("400px");
     		pams.setHeight("400px");
     		UI.getCurrent().addWindow(pams);
     		pams.addCloseListener(event -> {
     			updateGrid();
-    		});    		
+    		});
     	});
     	
     	btnBorrar.addClickListener(e -> {
@@ -183,7 +180,7 @@ public class PersonaView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		getUI().getNavigator().navigateTo(PersonaView.NAME);
+		getUI().getNavigator().navigateTo(UsuarioView.NAME);
 	}
 
 }

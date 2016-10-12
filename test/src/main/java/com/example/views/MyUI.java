@@ -1,27 +1,15 @@
 package com.example.views;
 
-import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.annotation.WebServlet;
 
-import com.example.dao.implementations.EntityManagerFactory;
-import com.example.dao.implementations.hibernate.PersonaDAOHib;
-import com.example.dao.interfaces.EntityManager;
-import com.example.modelo.Usuario;
-import com.example.views.PersonaView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
