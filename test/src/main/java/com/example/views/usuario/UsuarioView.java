@@ -1,7 +1,7 @@
 package com.example.views.usuario;
 
 import com.example.dao.implementations.EntityManagerFactory;
-import com.example.dao.implementations.hibernate.PersonaDAOHib;
+import com.example.dao.implementations.hibernate.UsuarioDAOHib;
 import com.example.dao.interfaces.EntityManager;
 import com.example.modelo.Usuario;
 import com.vaadin.data.util.BeanItemContainer;
@@ -76,7 +76,7 @@ public class UsuarioView extends VerticalLayout implements View {
 		
 		btnBuscar.addClickListener(e -> {
 			em.beginTransaction();
-			PersonaDAOHib pdh = new PersonaDAOHib();
+			UsuarioDAOHib pdh = new UsuarioDAOHib();
 			Usuario persona = new Usuario();
 			persona.setNombre(tfNombre.getValue());
 			persona.setApellido(tfApellido.getValue());
@@ -139,9 +139,10 @@ public class UsuarioView extends VerticalLayout implements View {
     	
     	btnBorrar.addClickListener(e -> {
     		em.beginTransaction();
-    		PersonaDAOHib pdh = new PersonaDAOHib();
-    		Usuario persona = (Usuario)grid.getSelectedRow();
-    		pdh.delete(persona);
+    		UsuarioDAOHib pdh = new UsuarioDAOHib();
+    		Usuario personaGrid = (Usuario)grid.getSelectedRow();
+    		Usuario usuario = pdh.findById(personaGrid.getId());
+    		pdh.delete(usuario);
     		em.commit();
     		updateGrid();
     	});
@@ -164,7 +165,7 @@ public class UsuarioView extends VerticalLayout implements View {
 
 	private void updateGrid() {
 		em.beginTransaction();
-		PersonaDAOHib pdh = new PersonaDAOHib();
+		UsuarioDAOHib pdh = new UsuarioDAOHib();
     	BeanItemContainer<Usuario> personaData = new BeanItemContainer<Usuario>(Usuario.class, pdh.findAll());
     	grid.setContainerDataSource(personaData);
 	}

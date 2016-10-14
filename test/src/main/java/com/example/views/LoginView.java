@@ -30,8 +30,15 @@ public class LoginView extends VerticalLayout implements View {
 		Button btnLogin = new Button("Login");
 		loginForm.addComponent(btnLogin);
 		
+		Button btnRegistrarse = new Button("Registrarse");
+		loginForm.addComponent(btnRegistrarse);
+		
 		btnLogin.addClickListener(e -> {
 			UI.getCurrent().getNavigator().navigateTo(MainView.NAME);
+		});
+		
+		btnRegistrarse.addClickListener(e -> {
+			UI.getCurrent().getNavigator().navigateTo(RegistrarseView.NAME);
 		});
 	}
 	

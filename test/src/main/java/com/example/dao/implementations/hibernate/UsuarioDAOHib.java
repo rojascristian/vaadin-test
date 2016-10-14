@@ -5,13 +5,13 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
-import com.example.dao.interfaces.PersonaDAO;
+import com.example.dao.interfaces.UsuarioDAO;
 import com.example.modelo.Usuario;
 
 //@Repository("personaDao")
-public class PersonaDAOHib extends AbstractDAOHib implements PersonaDAO {
+public class UsuarioDAOHib extends AbstractDAOHib implements UsuarioDAO {
 
-	public PersonaDAOHib() {
+	public UsuarioDAOHib() {
 		super();
 	}
 
@@ -33,30 +33,36 @@ public class PersonaDAOHib extends AbstractDAOHib implements PersonaDAO {
 
 
 	@Override
-	public void save(Usuario persona) {
-		getSession().save(persona);
+	public void save(Usuario usuario) {
+		getSession().save(usuario);
 	}
 
 	@Override
-	public void delete(Usuario persona) {
-		getSession().delete(persona);
+	public void delete(Usuario usuario) {
+		getSession().delete(usuario);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Usuario> find(Usuario persona) {
+	public List<Usuario> find(Usuario usuario) {
 		Criteria criteria = getSession().createCriteria(Usuario.class);
-		if(persona.getNombre() != "" && persona.getNombre() != null){
-			criteria.add(Restrictions.eq("nombre", persona.getNombre()));
+		if(usuario.getNombre() != "" && usuario.getNombre() != null){
+			criteria.add(Restrictions.eq("nombre", usuario.getNombre()));
 		}
-		if(persona.getApellido() != "" && persona.getApellido() != null){
-			criteria.add(Restrictions.eq("apellido", persona.getApellido()));
+		if(usuario.getApellido() != "" && usuario.getApellido() != null){
+			criteria.add(Restrictions.eq("apellido", usuario.getApellido()));
 		}
-		if(persona.getEmail() != "" && persona.getEmail() != null){
-			criteria.add(Restrictions.eq("nombre", persona.getEmail()));
+		if(usuario.getEmail() != "" && usuario.getEmail() != null){
+			criteria.add(Restrictions.eq("nombre", usuario.getEmail()));
 		}
 		List<Usuario> personas = (List<Usuario>) criteria.list();
 		return personas;
+	}
+	
+	public Usuario findById(Long id) {
+		Criteria criteria = getSession().createCriteria(Usuario.class);
+		criteria.add(Restrictions.eq("id", id));
+		return (Usuario) criteria.uniqueResult();
 	}
 
 }

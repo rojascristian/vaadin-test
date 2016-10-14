@@ -1,7 +1,7 @@
 package com.example.views.rol;
 
 import com.example.dao.implementations.EntityManagerFactory;
-import com.example.dao.implementations.hibernate.PersonaDAOHib;
+import com.example.dao.implementations.hibernate.UsuarioDAOHib;
 import com.example.dao.implementations.hibernate.RolDAOHib;
 import com.example.dao.interfaces.EntityManager;
 import com.example.modelo.Rol;

@@ -1,18 +1,24 @@
 package com.example.views.usuario;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.example.dao.implementations.EntityManagerFactory;
-import com.example.dao.implementations.hibernate.PersonaDAOHib;
+import com.example.dao.implementations.hibernate.RolDAOHib;
+import com.example.dao.implementations.hibernate.UsuarioDAOHib;
 import com.example.dao.interfaces.EntityManager;
+import com.example.modelo.Rol;
 import com.example.modelo.Usuario;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.BeanValidator;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -28,11 +34,20 @@ class UsuarioAltaModificarSub extends Window {
 	private DateField dfFechaNacimiento;
 	private Button btnGuardar;
 	private Button btnCerrar;
+	private ComboBox cbbRoles;
+	
+	private EntityManager em = EntityManagerFactory.getInstance(EntityManagerFactory.MYSQL);
+	private RolDAOHib rdh = new RolDAOHib();
 	
 //	public UsuarioAltaModificarSub(String captionWindow) {
 	public UsuarioAltaModificarSub(String captionWindow, Usuario usuario) {
         super(captionWindow); // Set window caption
         center();
+        
+        em.beginTransaction();
+        List<Rol> roles = rdh.findAll();
+        BeanItemContainer<Rol> rolesBean = new BeanItemContainer<Rol>(Rol.class, roles);
+        
 
         // Some basic content for the window
         FormLayout content = new FormLayout();
@@ -40,7 +55,9 @@ class UsuarioAltaModificarSub extends Window {
         tfApellido = new TextField("Apellido :");
         tfEmail = new TextField("Email :");
         dfFechaNacimiento = new DateField();
-        content.addComponents(tfNombre, tfApellido, tfEmail, dfFechaNacimiento);
+        cbbRoles = new ComboBox("Asignar Roles", rolesBean);
+        cbbRoles.setItemCaptionPropertyId("descripcion");
+        content.addComponents(tfNombre, tfApellido, tfEmail, dfFechaNacimiento, cbbRoles);
         
         content.setMargin(true);
         setContent(content);
@@ -85,8 +102,11 @@ class UsuarioAltaModificarSub extends Window {
 				usuario.setApellido(tfApellido.getValue());
 				usuario.setEmail(tfEmail.getValue());
 				usuario.setFechaNacimiento(dfFechaNacimiento.getValue());
+				List<Rol> roles = new ArrayList<Rol>();
+				roles.add((Rol) cbbRoles.getValue());
+				usuario.setRoles(roles);
 			}
-			PersonaDAOHib pdh = new PersonaDAOHib();
+			UsuarioDAOHib pdh = new UsuarioDAOHib();
 			pdh.save(usuario);
 			em.commit();
 			close();
