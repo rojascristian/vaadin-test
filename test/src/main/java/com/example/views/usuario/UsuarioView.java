@@ -1,10 +1,13 @@
 package com.example.views.usuario;
 
+import java.lang.reflect.Field;
+
 import com.example.dao.implementations.EntityManagerFactory;
 import com.example.dao.implementations.hibernate.UsuarioDAOHib;
 import com.example.dao.interfaces.EntityManager;
 import com.example.modelo.Usuario;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -12,6 +15,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.HeaderCell;
+import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Grid.SingleSelectionModel;
 
 import com.vaadin.ui.HorizontalLayout;
@@ -58,8 +63,14 @@ public class UsuarioView extends VerticalLayout implements View {
 		// Create the content
 		FormLayout content = new FormLayout();
 		tfNombre = new TextField("Nombre");
+		tfNombre.setNullSettingAllowed(true);
+		tfNombre.setNullRepresentation("");
 		tfApellido = new TextField("Apellido");
+		tfApellido.setNullSettingAllowed(true);
+		tfApellido.setNullRepresentation("");
 		tfEmail = new TextField("Email");
+		tfEmail.setNullSettingAllowed(true);
+		tfEmail.setNullRepresentation("");
 		dfFechaNacimiento = new DateField("Fecha Nacimiento");
 		content.addComponents(tfNombre, tfApellido, tfEmail, dfFechaNacimiento);
 		content.setSizeUndefined(); // Shrink to fit
@@ -94,7 +105,7 @@ public class UsuarioView extends VerticalLayout implements View {
 		
 		HorizontalLayout hlGrid = new HorizontalLayout();
 		hlGrid.setSizeFull();
-		grid.setColumns("id", "nombre", "apellido", "email", "fechaNacimiento");
+		grid.setColumns("nombre", "apellido", "email", "fechaNacimiento");
 		hlGrid.setMargin(true);
 		hlGrid.setSpacing(true);
 		hlGrid.addComponent(grid);
@@ -126,9 +137,9 @@ public class UsuarioView extends VerticalLayout implements View {
     	});
     	
     	btnModificar.addClickListener(e -> {
-//    		pams = new UsuarioAltaModificarSub("Modificar persona");
     		Usuario usuarioSeleccionado = (Usuario) ((SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
     		pams = new UsuarioAltaModificarSub("Modificar usuario", usuarioSeleccionado);
+    		
     		pams.setWidth("400px");
     		pams.setHeight("400px");
     		UI.getCurrent().addWindow(pams);
@@ -162,14 +173,12 @@ public class UsuarioView extends VerticalLayout implements View {
 		addComponent(mainContent);
 	}
 
-
 	private void updateGrid() {
 		em.beginTransaction();
 		UsuarioDAOHib pdh = new UsuarioDAOHib();
     	BeanItemContainer<Usuario> personaData = new BeanItemContainer<Usuario>(Usuario.class, pdh.findAll());
     	grid.setContainerDataSource(personaData);
 	}
-
 
 	private void limpiarFiltros() {
 		tfNombre.setValue("");

@@ -3,6 +3,7 @@ package com.example.dao.implementations.hibernate;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import com.example.dao.interfaces.UsuarioDAO;
@@ -47,13 +48,16 @@ public class UsuarioDAOHib extends AbstractDAOHib implements UsuarioDAO {
 	public List<Usuario> find(Usuario usuario) {
 		Criteria criteria = getSession().createCriteria(Usuario.class);
 		if(usuario.getNombre() != "" && usuario.getNombre() != null){
-			criteria.add(Restrictions.eq("nombre", usuario.getNombre()));
+			criteria.add(Restrictions.like("nombre", usuario.getNombre(), MatchMode.ANYWHERE));
 		}
 		if(usuario.getApellido() != "" && usuario.getApellido() != null){
-			criteria.add(Restrictions.eq("apellido", usuario.getApellido()));
+			criteria.add(Restrictions.like("apellido", usuario.getApellido(), MatchMode.ANYWHERE));
 		}
 		if(usuario.getEmail() != "" && usuario.getEmail() != null){
-			criteria.add(Restrictions.eq("nombre", usuario.getEmail()));
+			criteria.add(Restrictions.like("email", usuario.getEmail(), MatchMode.ANYWHERE));
+		}
+		if(usuario.getFechaNacimiento() != null){
+			criteria.add(Restrictions.eq("fechaNacimiento", usuario.getFechaNacimiento()));
 		}
 		List<Usuario> personas = (List<Usuario>) criteria.list();
 		return personas;

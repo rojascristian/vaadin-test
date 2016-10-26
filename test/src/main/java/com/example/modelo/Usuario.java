@@ -1,5 +1,6 @@
 package com.example.modelo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,12 +39,11 @@ public class Usuario {
 		this.id = id;
 	}
 	
-//    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @OneToMany
+    @ManyToMany
     @JoinTable(name="usuario_rol",
     			joinColumns=@JoinColumn(name="usuario_id"),
     			inverseJoinColumns=@JoinColumn(name="rol_id")
-    )  
+    )
 	public List<Rol> getRoles(){
 		return this.roles;
 	}
@@ -85,13 +85,16 @@ public class Usuario {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 	
-	public Usuario() {}
+	public Usuario() {
+		this.roles = new ArrayList<Rol>();
+	}
 	public Usuario(String nombre, String apellido, String email, Date fechaNacimiento) {
 		super();
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.email = email;
 		this.fechaNacimiento = fechaNacimiento;
+		this.roles = new ArrayList<Rol>();
 	}
 	
 }
