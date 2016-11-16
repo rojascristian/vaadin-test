@@ -1,13 +1,14 @@
 package com.example.views.usuario;
 
-import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import com.example.dao.implementations.EntityManagerFactory;
 import com.example.dao.implementations.hibernate.UsuarioDAOHib;
 import com.example.dao.interfaces.EntityManager;
 import com.example.modelo.Usuario;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -15,7 +16,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.HeaderCell;
 import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Grid.SingleSelectionModel;
 
@@ -24,8 +24,12 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.DateRenderer;
 
 public class UsuarioView extends VerticalLayout implements View {
+	
+	private static final String DATEFORMAT = "%1$td/%1$tm/%1$tY";
+	
 	private static final long serialVersionUID = 358082736884749316L;
 	public static String NAME = "persona";
 	private VerticalLayout mainContent;
@@ -50,6 +54,7 @@ public class UsuarioView extends VerticalLayout implements View {
 	private Button btnBorrar;
 
 	private EntityManager em = EntityManagerFactory.getInstance(EntityManagerFactory.MYSQL);
+	private HeaderRow filterRow;
 	
 	public UsuarioView(){
 		
@@ -65,14 +70,21 @@ public class UsuarioView extends VerticalLayout implements View {
 		tfNombre = new TextField("Nombre");
 		tfNombre.setNullSettingAllowed(true);
 		tfNombre.setNullRepresentation("");
+		content.addComponent(tfNombre);
+		
 		tfApellido = new TextField("Apellido");
 		tfApellido.setNullSettingAllowed(true);
 		tfApellido.setNullRepresentation("");
+		content.addComponent(tfApellido);
+		
 		tfEmail = new TextField("Email");
 		tfEmail.setNullSettingAllowed(true);
 		tfEmail.setNullRepresentation("");
+		content.addComponent(tfEmail);
+		
 		dfFechaNacimiento = new DateField("Fecha Nacimiento");
-		content.addComponents(tfNombre, tfApellido, tfEmail, dfFechaNacimiento);
+		content.addComponent(dfFechaNacimiento);
+		
 		content.setSizeUndefined(); // Shrink to fit
 		content.setMargin(true);
 		btnBuscar = new Button("Buscar");
@@ -105,7 +117,13 @@ public class UsuarioView extends VerticalLayout implements View {
 		
 		HorizontalLayout hlGrid = new HorizontalLayout();
 		hlGrid.setSizeFull();
-		grid.setColumns("nombre", "apellido", "email", "fechaNacimiento");
+//		grid.setColumns("nombre", "apellido", "email", "fechaNacimiento");
+		grid.addColumn("nombre");
+		grid.addColumn("apellido");
+		grid.addColumn("email");
+		grid.addColumn("fechaNacimiento");
+//		grid.addColumn("fechaNacimiento", Usuario -> DATEFORMAT.format(Usuario.getFechaNacimiento())).setHidable(true);
+		
 		hlGrid.setMargin(true);
 		hlGrid.setSpacing(true);
 		hlGrid.addComponent(grid);

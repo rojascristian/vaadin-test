@@ -32,7 +32,11 @@ public class MyUI extends UI {
     	
         getPage().setTitle("Navigation Example");
         
-        // Create a navigator to control the views
+        setupNavigator();
+    }
+
+	private void setupNavigator() {
+		// Create a navigator to control the views
         navigator = new Navigator(this, this);
         
         // Create and register the views
@@ -42,7 +46,7 @@ public class MyUI extends UI {
         navigator.addView(RegistrarseView.NAME, new RegistrarseView());
         
         navigator.navigateTo(LoginView.NAME);
-    }
+	}
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
