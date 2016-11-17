@@ -1,14 +1,21 @@
 package com.example.views;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.example.event.MainEvent.UserLoginRequestedEvent;
+import com.example.event.MainEventBus;
+import com.example.modelo.Usuario;
+import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 /**
@@ -21,6 +28,8 @@ import com.vaadin.ui.UI;
 @Theme("mytheme")
 public class MyUI extends UI {
 	
+	private final MainEventBus mainEventbus = new MainEventBus();
+	
 	Navigator navigator;
 	final String MAINVIEW = "main";
 	
@@ -32,24 +41,40 @@ public class MyUI extends UI {
     	
         getPage().setTitle("Navigation Example");
         
-        setupNavigator();
+        MainEventBus.register(this);
+        
+        actualizarContenido();
     }
-
-	private void setupNavigator() {
-		// Create a navigator to control the views
-        navigator = new Navigator(this, this);
-        
-        // Create and register the views
-        navigator.addView("", new LoginView());
-        navigator.addView(LoginView.NAME, new LoginView());
-        navigator.addView(MainView.NAME, new MainView());
-        navigator.addView(RegistrarseView.NAME, new RegistrarseView());
-        
-        navigator.navigateTo(LoginView.NAME);
-	}
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends VaadinServlet {
+    }
+    
+    private void actualizarContenido(){
+    	Usuario usuario = obtenerUsuario();
+    	if(usuario != null && "123".equals(usuario.getNombre())){
+    		setContent(new MainView());
+    	} else {
+    		setContent(new LoginView());
+    	}
+    }
+    
+    private Usuario obtenerUsuario(){
+        Usuario usuario = (Usuario) VaadinSession.getCurrent().getAttribute(Usuario.class.getName());
+        return usuario;
+    }
+    
+    @Subscribe
+    public void userLoginRequested(final UserLoginRequestedEvent event) {
+    	// TODO: validar contra la BD
+    	
+    	Usuario usuario = new Usuario(event.getUserName(),event.getPassword(),"e_prueba",new Date());
+        VaadinSession.getCurrent().setAttribute(Usuario.class.getName(), usuario);
+        actualizarContenido();
+    }
+    
+    public static MainEventBus getMainEventbus() {
+        return ((MyUI) getCurrent()).mainEventbus;
     }
 }

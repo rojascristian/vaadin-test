@@ -1,12 +1,17 @@
 package com.example.views;
 
+import com.example.MainNavigator;
+import com.example.modelo.Usuario;
 import com.example.views.rol.RolView;
 import com.example.views.usuario.UsuarioView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
@@ -17,63 +22,80 @@ public class MainView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -1065352167160385868L;
 	public static String NAME = "main";
 	
-	Navigator mainViewNavigator;
+	Navigator mainNavigator;
+	private VerticalLayout bodyContent;
 	
     public MainView() {
     	
-    	HorizontalLayout hlHeader = new HorizontalLayout();
-    	hlHeader.setSizeFull();
-    	Button btnLogout = new Button("Log-out");
-    	hlHeader.addComponent(btnLogout);
-    	hlHeader.setComponentAlignment(btnLogout, Alignment.TOP_RIGHT);
-    	addComponent(hlHeader);
     	
-    	HorizontalLayout menuAndContent = new HorizontalLayout();
-    	menuAndContent.setSizeFull();
-    	Panel panelMenu = new Panel();
-    	Tree menuTree = new Tree("Contenido");
-    	menuTree.setSizeFull();
-    	panelMenu.setContent(menuTree);
+    	addComponent(generarHeader());
+    	addComponent(generarBody());
+    	addComponent(generarFooter());
     	
-    	// TODO: AGREGAR ACCIONES DE ACUERDO A LOS ROLES DEL USUARIO
-    	// Couple of childless root items
-    	menuTree.addItem("Usuarios");
-    	menuTree.setChildrenAllowed("Usuarios", false);
-    	menuTree.addItem("Roles");
-    	menuTree.setChildrenAllowed("Roles", false);
-    	menuAndContent.addComponent(panelMenu);
+    	mainNavigator = new MainNavigator(bodyContent);
     	
-    	Panel panelContent = new Panel();
-    	panelContent.setContent(new UsuarioView());
-    	menuAndContent.addComponent(panelContent);
+//    	mainNavigator.addView(UsuarioView.NAME, new UsuarioView());
+//    	mainNavigator.addView(RolView.NAME, new RolView());
     	
-    	addComponent(menuAndContent);
-    	menuAndContent.setExpandRatio(panelMenu, 1);
-    	menuAndContent.setExpandRatio(panelContent, 9);
-    	
-    	HorizontalLayout hlFooter = new HorizontalLayout();
-    	addComponent(hlFooter);
-    	
-    	btnLogout.addClickListener(e -> {
-    		getSession().close();
-    		UI.getCurrent().getNavigator().navigateTo(LoginView.NAME);
-    	});
-    	
-    	// TODO: VER SI SE PUEDE USAR CON NAVIGATION
-    	menuTree.addValueChangeListener(event -> {
-    	    if (event.getProperty() != null && event.getProperty().getValue() != null) {
-    	            if(event.getProperty().getValue() == "Usuarios"){
-    	            	panelContent.setContent(new UsuarioView());
-    	            }
-    	            if(event.getProperty().getValue() == "Roles"){
-    	            	panelContent.setContent(new RolView());
-    	            }
-    	    }
-    	});
+//    	btnLogout.addClickListener(e -> {
+//    		getSession().close();
+//    		UI.getCurrent().getNavigator().navigateTo(LoginView.NAME);
+//    	});
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
     	
+    }
+    
+    public HorizontalLayout generarHeader(){
+    	HorizontalLayout hlHeader = new HorizontalLayout();
+    	hlHeader.setSizeFull();
+    	Button btnLogout = new Button("Log-out");
+    	hlHeader.addComponent(btnLogout);
+    	hlHeader.setComponentAlignment(btnLogout, Alignment.TOP_RIGHT);
+    	return hlHeader;
+    }
+    
+    public HorizontalLayout generarFooter(){
+    	return new HorizontalLayout();   	
+    }
+    
+    public HorizontalLayout generarBody(){
+    	HorizontalLayout bodyLayout = new HorizontalLayout();
+    	VerticalLayout toolbar = generarToolbar();
+    	bodyContent = new VerticalLayout();
+    	
+    	bodyLayout.addComponent(toolbar);
+    	bodyLayout.addComponent(bodyContent);
+    	
+    	bodyLayout.setSizeFull();
+    	
+    	addComponent(bodyLayout);
+    	bodyLayout.setExpandRatio(toolbar, 1);
+    	bodyLayout.setExpandRatio(bodyContent, 9);
+    	
+    	return bodyLayout;
+    }
+    
+    public void setupNavigator(){
+    	
+    }
+    
+    public VerticalLayout generarToolbar(){
+    	VerticalLayout toolbar = new VerticalLayout();
+    	toolbar.addComponent(new Button("Usuarios", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				mainNavigator.navigateTo(UsuarioView.NAME);
+			}
+    	  }));
+    	toolbar.addComponent(new Button("Roles", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				mainNavigator.navigateTo(RolView.NAME);
+			}
+    	  }));    	
+    	return toolbar;
     }
 }
