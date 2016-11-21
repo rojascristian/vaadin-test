@@ -1,6 +1,8 @@
 package com.example.views;
 
 import com.example.MainNavigator;
+import com.example.event.MainEventBus;
+import com.example.event.MainEvent.UserLogoutRequestedEvent;
 import com.example.modelo.Usuario;
 import com.example.views.rol.RolView;
 import com.example.views.usuario.UsuarioView;
@@ -13,9 +15,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class MainView extends VerticalLayout implements View {
@@ -33,14 +32,6 @@ public class MainView extends VerticalLayout implements View {
     	addComponent(generarFooter());
     	
     	mainNavigator = new MainNavigator(bodyContent);
-    	
-//    	mainNavigator.addView(UsuarioView.NAME, new UsuarioView());
-//    	mainNavigator.addView(RolView.NAME, new RolView());
-    	
-//    	btnLogout.addClickListener(e -> {
-//    		getSession().close();
-//    		UI.getCurrent().getNavigator().navigateTo(LoginView.NAME);
-//    	});
     }
 
     @Override
@@ -51,7 +42,12 @@ public class MainView extends VerticalLayout implements View {
     public HorizontalLayout generarHeader(){
     	HorizontalLayout hlHeader = new HorizontalLayout();
     	hlHeader.setSizeFull();
-    	Button btnLogout = new Button("Log-out");
+    	Button btnLogout = new Button("Log-out", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				MainEventBus.post(new UserLogoutRequestedEvent());
+			}
+		});
     	hlHeader.addComponent(btnLogout);
     	hlHeader.setComponentAlignment(btnLogout, Alignment.TOP_RIGHT);
     	return hlHeader;

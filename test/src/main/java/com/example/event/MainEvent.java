@@ -3,21 +3,24 @@ package com.example.event;
 public abstract class MainEvent {
 	
     public static final class UserLoginRequestedEvent {
-        private final String userName, password;
+        private final String email, password;
 
-        public UserLoginRequestedEvent(final String userName,
+        public UserLoginRequestedEvent(final String email,
                 final String password) {
-            this.userName = userName;
+            this.email = email;
             this.password = password;
         }
 
-        public String getUserName() {
-            return userName;
+        public String getEmail() {
+            return email;
         }
 
         public String getPassword() {
             return password;
         }
+    }
+    
+    public static final class UserLogoutRequestedEvent {
     }
 
 }

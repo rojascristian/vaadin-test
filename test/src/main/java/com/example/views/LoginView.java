@@ -34,13 +34,6 @@ public class LoginView extends VerticalLayout implements View {
 		Button btnLogin = new Button("Login");
 		loginForm.addComponent(btnLogin);
 		
-//		Button btnRegistrarse = new Button("Registrarse");
-//		loginForm.addComponent(btnRegistrarse);
-		
-//		btnLogin.addClickListener(e -> {
-//			UI.getCurrent().getNavigator().navigateTo(MainView.NAME);
-//		});
-		
 		btnLogin.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -49,10 +42,6 @@ public class LoginView extends VerticalLayout implements View {
                 MainEventBus.post(new UserLoginRequestedEvent(tfUsuario.getValue(), pfPassword.getValue()));
             }
         });
-		
-//		btnRegistrarse.addClickListener(e -> {
-//			UI.getCurrent().getNavigator().navigateTo(RegistrarseView.NAME);
-//		});
 	}
 	
 	@Override

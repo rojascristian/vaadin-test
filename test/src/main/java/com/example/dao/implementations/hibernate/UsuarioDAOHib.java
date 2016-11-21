@@ -68,5 +68,19 @@ public class UsuarioDAOHib extends AbstractDAOHib implements UsuarioDAO {
 		criteria.add(Restrictions.eq("id", id));
 		return (Usuario) criteria.uniqueResult();
 	}
+	
+	public Usuario findByEmail(String email) {
+		Criteria criteria = getSession().createCriteria(Usuario.class);
+		criteria.add(Restrictions.like("email", email, MatchMode.EXACT));
+		return (Usuario) criteria.uniqueResult();
+	}
+	
+	// TODO: agregar los cambios a la entidad Usuario
+	public Usuario findByEmailPassword(String email, String password) {
+		Criteria criteria = getSession().createCriteria(Usuario.class);
+		criteria.add(Restrictions.eq("email", email));
+		criteria.add(Restrictions.eq("password", password));
+		return (Usuario) criteria.uniqueResult();
+	}
 
 }

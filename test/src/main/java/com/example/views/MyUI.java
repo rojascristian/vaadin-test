@@ -1,18 +1,21 @@
 package com.example.views;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.annotation.WebServlet;
 
 import com.example.event.MainEvent.UserLoginRequestedEvent;
+import com.example.event.MainEvent.UserLogoutRequestedEvent;
+import com.example.dao.implementations.EntityManagerFactory;
+import com.example.dao.implementations.hibernate.UsuarioDAOHib;
+import com.example.dao.interfaces.EntityManager;
 import com.example.event.MainEventBus;
 import com.example.modelo.Usuario;
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
@@ -29,8 +32,8 @@ import com.vaadin.ui.UI;
 public class MyUI extends UI {
 	
 	private final MainEventBus mainEventbus = new MainEventBus();
+	private EntityManager em = EntityManagerFactory.getInstance(EntityManagerFactory.MYSQL);
 	
-	Navigator navigator;
 	final String MAINVIEW = "main";
 	
     @Override
@@ -53,7 +56,7 @@ public class MyUI extends UI {
     
     private void actualizarContenido(){
     	Usuario usuario = obtenerUsuario();
-    	if(usuario != null && "123".equals(usuario.getNombre())){
+    	if(usuario != null){
     		setContent(new MainView());
     	} else {
     		setContent(new LoginView());
@@ -67,11 +70,18 @@ public class MyUI extends UI {
     
     @Subscribe
     public void userLoginRequested(final UserLoginRequestedEvent event) {
-    	// TODO: validar contra la BD
+    	em.beginTransaction();
+    	UsuarioDAOHib pdh = new UsuarioDAOHib();
+    	Usuario usuario = pdh.findByEmail(event.getEmail());
     	
-    	Usuario usuario = new Usuario(event.getUserName(),event.getPassword(),"e_prueba",new Date());
         VaadinSession.getCurrent().setAttribute(Usuario.class.getName(), usuario);
-        actualizarContenido();
+    	actualizarContenido();
+    }
+    
+    @Subscribe
+    public void userLogoutRequested(final UserLogoutRequestedEvent event){
+    	VaadinSession.getCurrent().close();
+    	Page.getCurrent().reload();
     }
     
     public static MainEventBus getMainEventbus() {
