@@ -1,13 +1,14 @@
 package com.example;
 
+import java.lang.reflect.Constructor;
+
 import com.example.modelo.Rol;
 import com.example.modelo.Usuario;
-import com.example.views.LoginView;
-import com.example.views.MainView;
-import com.example.views.RegistrarseView;
+import com.example.util.MenuViewType;
 import com.example.views.rol.RolView;
 import com.example.views.usuario.UsuarioView;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
@@ -17,10 +18,18 @@ public class MainNavigator extends Navigator {
     public MainNavigator(final ComponentContainer container) {
         super(UI.getCurrent(), container);
         
-        // TODO: obtener las vistas del usuario de acuerdo al rol y luego agregarlas
-    	this.addView(UsuarioView.NAME, new UsuarioView());
-    	this.addView(RolView.NAME, new RolView());
-        
+        Usuario usuario = (Usuario) VaadinSession.getCurrent().getAttribute(Usuario.class.getName());
+
+        try {
+        	for(Rol rol: usuario.getRoles()){
+        		MenuViewType view = MenuViewType.getByViewName(rol.getNombreVista());
+        		Class<?> clazz = Class.forName(view.getViewClass().getName());
+        		View instance = (View)clazz.newInstance();
+        		this.addView(rol.getNombreVista(), instance);        	
+        	}
+        } catch(Exception ex){
+        	System.out.println(ex.getMessage());
+        }
 	}
 	
 }

@@ -12,7 +12,9 @@ import javax.persistence.Table;
 public class Rol {
 
 	private Long id;
+//	private long id;
 	private String descripcion;
+	private String nombreVista;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +34,27 @@ public class Rol {
 		this.descripcion = descripcion;
 	}
 	
+	@Column(name = "nombre_vista")
+	public String getNombreVista(){
+		return nombreVista;
+	}
+	
+	public void setNombreVista(String nombreVista){
+		this.nombreVista = nombreVista;
+	}
+	
 	public Rol() {}
+
+	public boolean equals(Object o){
+		if(o == null)                return false;
+//		if(!(o instanceof) Rol) return false;
+	
+		Rol other = (Rol) o;
+		return this.id == other.id;
+	}
+	
+	public int hashCode(){
+		return (int) id.intValue();
+	}
 	
 }

@@ -3,7 +3,9 @@ package com.example.views;
 import com.example.MainNavigator;
 import com.example.event.MainEventBus;
 import com.example.event.MainEvent.UserLogoutRequestedEvent;
+import com.example.modelo.Rol;
 import com.example.modelo.Usuario;
+import com.example.util.MenuViewType;
 import com.example.views.rol.RolView;
 import com.example.views.usuario.UsuarioView;
 import com.vaadin.navigator.Navigator;
@@ -24,9 +26,7 @@ public class MainView extends VerticalLayout implements View {
 	Navigator mainNavigator;
 	private VerticalLayout bodyContent;
 	
-    public MainView() {
-    	
-    	
+    public MainView(){
     	addComponent(generarHeader());
     	addComponent(generarBody());
     	addComponent(generarFooter());
@@ -79,19 +79,19 @@ public class MainView extends VerticalLayout implements View {
     }
     
     public VerticalLayout generarToolbar(){
+    	Usuario usuario = (Usuario) VaadinSession.getCurrent().getAttribute(Usuario.class.getName());
     	VerticalLayout toolbar = new VerticalLayout();
-    	toolbar.addComponent(new Button("Usuarios", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				mainNavigator.navigateTo(UsuarioView.NAME);
-			}
-    	  }));
-    	toolbar.addComponent(new Button("Roles", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				mainNavigator.navigateTo(RolView.NAME);
-			}
-    	  }));    	
+    	
+    	for(Rol rol: usuario.getRoles()){
+    		MenuViewType view = MenuViewType.getByViewName(rol.getNombreVista());
+        	toolbar.addComponent(new Button(view.getViewCaption(), new Button.ClickListener() {
+        		
+    			@Override
+    			public void buttonClick(ClickEvent event) {
+    				mainNavigator.navigateTo(view.getViewName());
+    			}
+        	  }));    		
+    	}
     	return toolbar;
     }
 }

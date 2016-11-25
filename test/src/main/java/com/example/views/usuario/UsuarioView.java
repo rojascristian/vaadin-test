@@ -31,7 +31,7 @@ public class UsuarioView extends VerticalLayout implements View {
 	private static final String DATEFORMAT = "%1$td/%1$tm/%1$tY";
 	
 	private static final long serialVersionUID = 358082736884749316L;
-	public static String NAME = "persona";
+	public static String NAME = "usuario";
 	private VerticalLayout mainContent;
 	
 	private Panel panelFiltros;
@@ -58,14 +58,46 @@ public class UsuarioView extends VerticalLayout implements View {
 	
 	public UsuarioView(){
 		
+		addComponent(generarVista());
+		configurarAcciones();
+		updateGrid();
+		
+	}
+
+	private void updateGrid() {
+		em.beginTransaction();
+		UsuarioDAOHib pdh = new UsuarioDAOHib();
+    	BeanItemContainer<Usuario> personaData = new BeanItemContainer<Usuario>(Usuario.class, pdh.findAll());
+    	grid.setContainerDataSource(personaData);
+	}
+
+	private void limpiarFiltros() {
+		tfNombre.setValue("");
+		tfApellido.setValue("");
+		tfEmail.setValue("");
+		dfFechaNacimiento.setValue(null);
+	}
+
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		getUI().getNavigator().navigateTo(UsuarioView.NAME);
+	}
+	
+	public VerticalLayout generarVista(){
 		mainContent = new VerticalLayout();
 		mainContent.setSizeFull();
 		
-		grid = new Grid();
+		mainContent.addComponent(generarComponentesFiltros());
+		mainContent.addComponent(generarComponentesBody());
+		mainContent.addComponent(generarComponentesAcciones());
 		
+		return mainContent;
+	}
+	
+	public HorizontalLayout generarComponentesFiltros(){
 		panelFiltros = new Panel("Filtros");
 		
-		// Create the content
 		FormLayout content = new FormLayout();
 		tfNombre = new TextField("Nombre");
 		tfNombre.setNullSettingAllowed(true);
@@ -85,7 +117,7 @@ public class UsuarioView extends VerticalLayout implements View {
 		dfFechaNacimiento = new DateField("Fecha Nacimiento");
 		content.addComponent(dfFechaNacimiento);
 		
-		content.setSizeUndefined(); // Shrink to fit
+		content.setSizeUndefined();
 		content.setMargin(true);
 		btnBuscar = new Button("Buscar");
 		btnLimpiar = new Button("Limpiar");
@@ -97,6 +129,43 @@ public class UsuarioView extends VerticalLayout implements View {
 		content.setComponentAlignment(hlAccionesFiltros, Alignment.BOTTOM_RIGHT);
 		panelFiltros.setContent(content);
 		
+		return new HorizontalLayout(panelFiltros);
+	}
+	
+	public HorizontalLayout generarComponentesBody(){
+		
+		HorizontalLayout hlGrid = new HorizontalLayout();
+		hlGrid.setSizeFull();
+		
+		grid = new Grid();
+		grid.addColumn("nombre");
+		grid.addColumn("apellido");
+		grid.addColumn("email");
+		grid.addColumn("fechaNacimiento");
+		
+		hlGrid.setMargin(true);
+		hlGrid.setSpacing(true);
+		hlGrid.addComponent(grid);
+		hlGrid.setExpandRatio(grid, 1);
+		
+		return hlGrid;
+	}
+	
+	public HorizontalLayout generarComponentesAcciones(){
+    	hlAccionesGrid = new HorizontalLayout();
+    	btnNuevo = new Button("Nuevo");
+    	btnModificar = new Button("Modificar");
+    	btnBorrar = new Button("Borrar");
+    	btnModificar.setEnabled(false);
+    	btnBorrar.setEnabled(false);
+    	hlAccionesGrid.addComponents(btnNuevo, btnModificar, btnBorrar);
+    	hlAccionesGrid.setSpacing(true);
+    	hlAccionesGrid.setMargin(true);
+    	
+    	return hlAccionesGrid;
+	}
+	
+	public void configurarAcciones(){
 		btnBuscar.addClickListener(e -> {
 			em.beginTransaction();
 			UsuarioDAOHib pdh = new UsuarioDAOHib();
@@ -113,36 +182,6 @@ public class UsuarioView extends VerticalLayout implements View {
 			limpiarFiltros();
 		});
 		
-		mainContent.addComponent(panelFiltros);
-		
-		HorizontalLayout hlGrid = new HorizontalLayout();
-		hlGrid.setSizeFull();
-//		grid.setColumns("nombre", "apellido", "email", "fechaNacimiento");
-		grid.addColumn("nombre");
-		grid.addColumn("apellido");
-		grid.addColumn("email");
-		grid.addColumn("fechaNacimiento");
-//		grid.addColumn("fechaNacimiento", Usuario -> DATEFORMAT.format(Usuario.getFechaNacimiento())).setHidable(true);
-		
-		hlGrid.setMargin(true);
-		hlGrid.setSpacing(true);
-		hlGrid.addComponent(grid);
-		hlGrid.setExpandRatio(grid, 1);
-		
-    	updateGrid();
-    	
-    	mainContent.addComponent(hlGrid);
-    	
-    	hlAccionesGrid = new HorizontalLayout();
-    	btnNuevo = new Button("Nuevo");
-    	btnModificar = new Button("Modificar");
-    	btnBorrar = new Button("Borrar");
-    	btnModificar.setEnabled(false);
-    	btnBorrar.setEnabled(false);
-    	hlAccionesGrid.addComponents(btnNuevo, btnModificar, btnBorrar);
-    	hlAccionesGrid.setSpacing(true);
-    	hlAccionesGrid.setMargin(true);
-    	mainContent.addComponent(hlAccionesGrid);
     	
     	btnNuevo.addClickListener(e -> {
     		pams = new UsuarioAltaModificarSub("Alta de usuario", new Usuario());
@@ -158,7 +197,7 @@ public class UsuarioView extends VerticalLayout implements View {
     		Usuario usuarioSeleccionado = (Usuario) ((SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
     		pams = new UsuarioAltaModificarSub("Modificar usuario", usuarioSeleccionado);
     		
-    		pams.setWidth("400px");
+    		pams.setWidth("500px");
     		pams.setHeight("400px");
     		UI.getCurrent().addWindow(pams);
     		pams.addCloseListener(event -> {
@@ -186,29 +225,7 @@ public class UsuarioView extends VerticalLayout implements View {
     	    	btnModificar.setEnabled(false);
     	    	btnBorrar.setEnabled(false);
     	    }
-    	});
-		
-		addComponent(mainContent);
-	}
-
-	private void updateGrid() {
-		em.beginTransaction();
-		UsuarioDAOHib pdh = new UsuarioDAOHib();
-    	BeanItemContainer<Usuario> personaData = new BeanItemContainer<Usuario>(Usuario.class, pdh.findAll());
-    	grid.setContainerDataSource(personaData);
-	}
-
-	private void limpiarFiltros() {
-		tfNombre.setValue("");
-		tfApellido.setValue("");
-		tfEmail.setValue("");
-		dfFechaNacimiento.setValue(null);
-	}
-
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-		getUI().getNavigator().navigateTo(UsuarioView.NAME);
+    	});		
 	}
 
 }

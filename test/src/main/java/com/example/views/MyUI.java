@@ -1,6 +1,5 @@
 package com.example.views;
 
-import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.annotation.WebServlet;
